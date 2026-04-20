@@ -3,7 +3,8 @@ import pickle
 import pandas as pd
 from datasets import load_dataset
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
+from sklearn.svm import LinearSVC
+from sklearn.calibration import CalibratedClassifierCV
 from sklearn.metrics import accuracy_score, f1_score, classification_report
 from sklearn.pipeline import Pipeline
 
@@ -27,11 +28,10 @@ def build_pipeline():
         sublinear_tf=True, min_df=2, strip_accents="unicode",
         token_pattern=r"(?u)\b\w+\b",
     )
-    classifier = LogisticRegression(
-        C=5.0, max_iter=1000, solver="lbfgs",
-        n_jobs=-1, random_state=42,
+    classifier = CalibratedClassifierCV(
+        LinearSVC(C=1.0, max_iter=2000, random_state=42)
     )
-    return Pipeline([("tfidf", vectorizer), ("lr", classifier)])
+    return Pipeline([("tfidf", vectorizer), ("svm", classifier)])
 
 
 def train(pipeline, train_df):
@@ -60,20 +60,20 @@ def predict_on_texts(pipeline, texts):
     return pipeline.predict(texts)
 
 
-def save_pipeline(pipeline, path="tfidf_pipeline.pkl"):
+def save_pipeline(pipeline, path="svm_pipeline.pkl"):
     with open(path, "wb") as f:
         pickle.dump(pipeline, f)
     print(f"Pipeline saved → {path}")
 
 
-def load_pipeline(path="tfidf_pipeline.pkl"):
+def load_pipeline(path="svm_pipeline.pkl"):
     with open(path, "rb") as f:
         pipeline = pickle.load(f)
     print(f"Pipeline loaded ← {path}")
     return pipeline
 
 
-def save_metrics(metrics_list, path="results_tfidf.json"):
+def save_metrics(metrics_list, path="results_svm.json"):
     with open(path, "w") as f:
         json.dump(metrics_list, f, indent=2)
     print(f"Metrics saved → {path}")
