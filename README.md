@@ -16,7 +16,7 @@ Results below are transcribed from **Table 3 of the team's final report, _Paraph
 
 The practical lesson is to evaluate both **classifier stability and paraphrase quality**. Accuracy on the original inputs alone does not describe behavior under wording changes.
 
-## My Contribution — Leia Kim
+## My Contribution
 
 I designed and implemented the project's three classification models:
 
